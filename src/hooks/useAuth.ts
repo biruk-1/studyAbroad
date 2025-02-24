@@ -1,31 +1,30 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../supabase";
-import { User } from "@supabase/supabase-js";
+import { User, Session } from "@supabase/supabase-js";
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Check current session
     const getSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-
-      if (!session) {
-        // Sign in anonymously if no user
-        const { data, error } = await supabase.auth.signInAnonymously();
-        if (error) console.error("Error signing in anonymously:", error);
-        else setUser(data.user);
-      }
+      if (error) setError("Failed to load session.");
     };
 
     getSession();
 
-    // Listen for auth changes
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
       setUser(session?.user ?? null);
+      setLoading(false);
+      if (event === "SIGNED_IN") setError(null);
+      if (event === "SIGNED_OUT") setError(null);
     });
 
     return () => {
@@ -33,5 +32,56 @@ export const useAuth = () => {
     };
   }, []);
 
-  return { user, loading };
+  const signIn = async (email: string, password: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      setSession(data.session);
+      setUser(data.user);
+    } catch (err: any) {
+      setError(err.message || "Login failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signUp = async (email: string, password: string, name?: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name: name || email.split("@")[0] } },
+      });
+      if (error) throw error;
+      setSession(data.session);
+      setUser(data.user);
+      return "Signup successful! Check your email to confirm.";
+    } catch (err: any) {
+      setError(err.message || "Signup failed.");
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setSession(null);
+      setUser(null);
+    } catch (err: any) {
+      setError(err.message || "Logout failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { user, session, loading, error, signIn, signUp, signOut };
 };
