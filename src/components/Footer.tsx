@@ -1,34 +1,14 @@
-import { NavLink } from "react-router-dom";
+import { FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white p-6 mt-auto">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Quick Links */}
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Quick Links</h3>
-          <ul className="space-y-2">
-            <li><NavLink to="/" className="hover:underline">Home</NavLink></li>
-            <li><NavLink to="/countries" className="hover:underline">Countries</NavLink></li>
-            <li><NavLink to="/services" className="hover:underline">Services</NavLink></li>
-            <li><NavLink to="/about" className="hover:underline">About Us</NavLink></li>
-            <li><NavLink to="/contact" className="hover:underline">Contact</NavLink></li>
-          </ul>
-        </div>
-
-        {/* Social Media */}
-        <div>
-          <h3 className="text-lg font-semibold mb-2">Follow Us</h3>
-          <div className="flex space-x-4">
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">Facebook</a>
-            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">Twitter</a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400">Instagram</a>
-          </div>
-        </div>
-
-        {/* Copyright */}
-        <div>
-          <p>© {new Date().getFullYear()} Study Abroad Consultation. All rights reserved.</p>
+    <footer className="bg-gradient-to-r from-blue-800 to-blue-600 text-white py-8">
+      <div className="container flex flex-col md:flex-row justify-between items-center gap-6">
+        <p className="text-sm">&copy; 2025 Study Abroad Consultation. All rights reserved.</p>
+        <div className="flex gap-6">
+          <a href="#" className="text-xl hover:text-orange-400 transition-all"><FaFacebook /></a>
+          <a href="#" className="text-xl hover:text-orange-400 transition-all"><FaTwitter /></a>
+          <a href="#" className="text-xl hover:text-orange-400 transition-all"><FaInstagram /></a>
         </div>
       </div>
     </footer>

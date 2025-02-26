@@ -10,9 +10,7 @@ type ChatMessage = {
 };
 
 const Chat = () => {
-  const [chatMessages, setChatMessages] = useState<{ text: string; isUser: boolean }[]>([
-    { text: "Hi! I’m your Study Abroad Bot. Ask me about visas, countries, or applications!", isUser: false },
-  ]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [chatStatus, setChatStatus] = useState("");
   const [chatError, setChatError] = useState<string | null>(null);
@@ -26,70 +24,79 @@ const Chat = () => {
   const [isSignup, setIsSignup] = useState(false);
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchMessages = async () => {
+      const { data, error } = await supabase
+        .from("chat")
+        .select("id, message, is_admin, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("Error fetching messages:", error);
+        setChatStatus("Failed to load chat history.");
+      } else {
+        setChatMessages(data || []);
+      }
+    };
+
+    fetchMessages();
+
+    const channel = supabase
+      .channel(`chat-${user.id}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "chat", filter: `user_id=eq.${user.id}` },
+        (payload) => {
+          setChatMessages((prev) => [...prev, payload.new as ChatMessage]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
+
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  };
-
-  const fetchWitResponse = async (message: string) => {
-    try {
-      const response = await fetch(`https://api.wit.ai/message?v=20230215&q=${encodeURIComponent(message)}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${import.meta.env.VITE_WIT_AI_TOKEN}`,
-        },
-      });
-      const data = await response.json();
-      const intent = data.intents[0]?.name || "unknown";
-      switch (intent) {
-        case "visa_query":
-          return "Visa processes vary by country. For example, the UK requires a Tier 4 Visa. Ask me about a specific country!";
-        case "country_selection":
-          return "Popular study abroad destinations include the UK, USA, and Canada. What field are you studying?";
-        case "application_help":
-          return "Applications typically need an SOP, transcripts, and recommendation letters. Need details?";
-        default:
-          return "I’m not sure about that. Try asking about visas, countries, or applications!";
-      }
-    } catch (error) {
-      console.error("Wit.ai error:", error);
-      return "Sorry, I couldn’t process that. Try again!";
-    }
   };
 
   const handleChatSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
 
-    setChatMessages((prev) => [...prev, { text: chatInput, isUser: true }]);
-    const userMessage = chatInput;
-    setChatInput("");
-
     if (!user) {
-      setPendingMessage(userMessage);
+      setPendingMessage(chatInput);
       setShowAuth(true);
+      setChatInput("");
       return;
     }
 
     try {
-      const aiResponse = await fetchWitResponse(userMessage);
-      setChatMessages((prev) => [...prev, { text: aiResponse, isUser: false }]);
-      setChatStatus("AI responded!");
-      setChatError(null);
-
-      // Optionally store in Supabase chat table
       const { error } = await supabase.from("chat").insert([
         {
           user_id: user.id,
           sender_name: user.user_metadata?.name || "User",
           sender_email: user.email || "unknown@example.com",
-          message: userMessage,
+          message: chatInput,
         },
       ]);
+
       if (error) throw error;
+      setChatInput("");
+      setChatStatus("Message sent! Waiting for admin reply...");
+      setChatError(null);
     } catch (error) {
-      console.error("Error in chat:", error);
-      setChatError(`Failed to process message: ${error.message}`);
+      console.error("Error sending chat message:", error);
+      setChatError(`Failed to send message: ${error.message}`);
       setChatStatus("");
     }
   };
@@ -121,12 +128,6 @@ const Chat = () => {
         setChatError(null);
         if (pendingMessage) {
           try {
-            const aiResponse = await fetchWitResponse(pendingMessage);
-            setChatMessages((prev) => [
-              ...prev,
-              { text: pendingMessage, isUser: true },
-              { text: aiResponse, isUser: false },
-            ]);
             const { error } = await supabase.from("chat").insert([
               {
                 user_id: user.id,
@@ -136,9 +137,10 @@ const Chat = () => {
               },
             ]);
             if (error) throw error;
+            console.log("Pending message sent successfully");
             setPendingMessage(null);
             setShowAuth(false);
-            setChatStatus("Message sent! Chatbot responded.");
+            setChatStatus("Message sent! Waiting for admin reply...");
           } catch (error) {
             console.error("Error sending pending message:", error);
             setChatError(`Failed to send message: ${error.message}`);
@@ -158,6 +160,7 @@ const Chat = () => {
 
   return (
     <>
+      {/* Live Chat Bubble */}
       <div className="fixed bottom-4 right-4 z-50">
         <button
           onClick={() => setIsChatOpen(!isChatOpen)}
@@ -180,6 +183,7 @@ const Chat = () => {
         </button>
       </div>
 
+      {/* Live Chat Window */}
       {isChatOpen && (
         <div className="fixed bottom-20 right-4 w-80 bg-white border rounded-lg shadow-lg z-50">
           {user && !showAuth ? (
@@ -191,14 +195,23 @@ const Chat = () => {
                 </button>
               </div>
               <div className="p-4 h-64 overflow-y-auto bg-gray-50">
-                {chatMessages.map((msg, index) => (
-                  <div key={index} className={`mb-2 ${msg.isUser ? "text-right" : "text-left"}`}>
-                    <span className="text-gray-600 text-sm">
-                      {new Date().toLocaleTimeString()}
-                    </span>
-                    <p className={msg.isUser ? "text-blue-600" : "text-green-600"}>{msg.text}</p>
-                  </div>
-                ))}
+                {chatMessages.length === 0 ? (
+                  <p className="text-gray-500 text-center">
+                    Chat with an admin! Type below.
+                  </p>
+                ) : (
+                  chatMessages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`mb-2 ${msg.is_admin ? "text-right" : "text-left"}`}
+                    >
+                      <span className="text-gray-600 text-sm">
+                        {new Date(msg.created_at).toLocaleTimeString()}
+                      </span>
+                      <p className={msg.is_admin ? "text-blue-600" : ""}>{msg.message}</p>
+                    </div>
+                  ))
+                )}
                 <div ref={chatEndRef} />
               </div>
               <form onSubmit={handleChatSubmit} className="p-2 flex gap-2">
@@ -207,7 +220,7 @@ const Chat = () => {
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   className="flex-grow border p-2 rounded"
-                  placeholder="Ask the Study Abroad Bot..."
+                  placeholder="Chat with Admin..."
                 />
                 <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded">
                   Send
@@ -275,7 +288,7 @@ const Chat = () => {
                 <>
                   <div className="p-4 h-64 overflow-y-auto bg-gray-50">
                     <p className="text-gray-500 text-center">
-                      Chat with the Study Abroad Bot! Type your first message below.
+                      Chat with an admin! Type your first message below.
                     </p>
                   </div>
                   <form onSubmit={handleChatSubmit} className="p-2 flex gap-2">
@@ -284,7 +297,7 @@ const Chat = () => {
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       className="flex-grow border p-2 rounded"
-                      placeholder="Ask about study abroad..."
+                      placeholder="Chat with Admin..."
                     />
                     <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded">
                       Send

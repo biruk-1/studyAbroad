@@ -1,44 +1,89 @@
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+/* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* src/index.css or src/styles.css */
+/* src/index.css */
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-image: url("https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80"); /* Study abroad vibe */
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-  }
-  
-  nav {
-    background-color: rgba(37, 99, 235, 0.9); /* Semi-transparent blue */
-  }
-  
-  footer {
-    background-color: rgba(37, 99, 235, 0.9);
-  }
-  
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-image: url("https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: 100vh; /* Ensure body takes full height */
+  font-family: 'Poppins', sans-serif; /* Modern font */
+  background: linear-gradient(135deg, #e6f0fa, #fff); /* Subtle gradient */
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.bg-gray-100 {
+  background-color: rgba(243, 244, 246, 0.95);
+}
+
+.bg-white {
+  background-color: rgba(255, 255, 255, 0.98);
+}
+
+.text-gray-600 {
+  color: #4b5563; /* Darker gray for contrast */
+}
+
+.text-gray-700 {
+  color: #374151;
+}
+
+.text-gray-800 {
+  color: #1f2937;
+}
+
+.shadow-custom {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.rounded-xl {
+  border-radius: 1rem;
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+
+/* Ensure content is readable over background */
+nav {
+  background-color: rgba(37, 99, 235, 0.95); /* Slightly more opaque */
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Keep navbar above content */
+}
+
+footer {
+  background-color: rgba(37, 99, 235, 0.95);
+  z-index: 10;
+}
+
+.min-h-screen {
+  background-color: rgba(255, 255, 255, 0.85); /* Light overlay for readability */
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
   .container {
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
   }
-  
-  .shadow-md {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .rounded-lg {
-    border-radius: 0.5rem;
-  }
-  
-  .bg-gray-100 {
-    background-color: rgba(243, 244, 246, 0.9); /* Semi-transparent for forms */
-  }
-  
-  .bg-white {
-    background-color: rgba(255, 255, 255, 0.95); /* Slightly transparent cards */
-  }
+}

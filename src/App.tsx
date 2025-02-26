@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
 import Navbar from "./components/Navbar.tsx";
 import Footer from "./components/Footer.tsx";
 import Home from "./components/Home.tsx";
-import Countries from "./components/Counteries.tsx";
+import Countries from "./components/Countries.tsx";
 import CountryDetail from "./components/CountryDetail.tsx";
 import Services from "./components/Services.tsx";
 import About from "./components/About.tsx";
@@ -16,7 +17,7 @@ import Testimonials from "./components/Testimonials.tsx";
 import Blog from "./components/Blog.tsx";
 import Login from "./components/Login.tsx";
 import ProtectedAdminChat from "./components/ProtectedAdminChat.tsx";
-import { useAuth } from "./hooks/useAuth"; // Corrected path
+import { useAuth } from "./hooks/useAuth"; // Correct path assuming src/hooks/
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { user } = useAuth();
