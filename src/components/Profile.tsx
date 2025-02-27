@@ -171,12 +171,20 @@ const Profile = () => {
         .select(`
           id,
           saved_at,
-          country:countries (name, flag, details)
+          country:countries! (name, flag, details)
         `)
         .eq("user_id", userData.user.id);
 
-      if (prefError) setError("Failed to load preferences.");
-      else setPreferences(prefData || []);
+      if (prefError) {
+        setError("Failed to load preferences.");
+      } else {
+        const formattedPreferences = prefData.map((pref: any) => ({
+          id: pref.id,
+          saved_at: pref.saved_at,
+          country: pref.countries[0]
+        }));
+        setPreferences(formattedPreferences || []);
+      }
 
       const { data: docData, error: docError } = await supabase
         .from("documents")
