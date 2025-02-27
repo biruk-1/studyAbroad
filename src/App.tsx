@@ -1,5 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom"; // Added useLocation
 import Navbar from "./components/Navbar.tsx";
 import Footer from "./components/Footer.tsx";
 import Home from "./components/Home.tsx";
@@ -17,16 +16,17 @@ import Testimonials from "./components/Testimonials.tsx";
 import Blog from "./components/Blog.tsx";
 import Login from "./components/Login.tsx";
 import ProtectedAdminChat from "./components/ProtectedAdminChat.tsx";
-import { useAuth } from "./hooks/useAuth"; // Correct path assuming src/hooks/
+import { useAuth } from "./hooks/useAuth";
 
 function ProtectedRoute({ children }: { children: JSX.Element }) {
-  const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
+  const { user, loading } = useAuth();
+  const location = useLocation(); // Now defined
+  console.log("ProtectedRoute - User:", user, "Loading:", loading);
+  if (loading) return <div className="text-center py-16 text-gray-600">Loading...</div>;
+  return user ? children : <Navigate to="/login" state={{ from: location.pathname }} replace />;
 }
 
 function App() {
-  const [isLiveChatOpen, setIsLiveChatOpen] = useState(false);
-
   return (
     <Router>
       <div className="min-h-screen flex flex-col">
@@ -70,8 +70,8 @@ function App() {
           </Routes>
         </main>
         <Footer />
-        <AIChatBot onLiveChatToggle={() => setIsLiveChatOpen(true)} />
-        <Chat isLiveChatOpen={isLiveChatOpen} />
+        <AIChatBot />
+        <Chat />
       </div>
     </Router>
   );
