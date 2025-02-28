@@ -18,10 +18,20 @@ import Login from "./components/Login";
 import ProtectedAdminChat from "./components/ProtectedAdminChat";
 import { useAuth } from "./hooks/useAuth";
 import { JSX } from "react";
+import withClassName from "./withClassName";
 
-interface ComponentWithClassNameProps {
-  className?: string;
-}
+const CountriesWithClassName = withClassName(Countries);
+const CountryDetailWithClassName = withClassName(CountryDetail);
+const ServicesWithClassName = withClassName(Services);
+const AboutWithClassName = withClassName(About);
+const ContactWithClassName = withClassName(Contact);
+const TestimonialsWithClassName = withClassName(Testimonials);
+const BlogWithClassName = withClassName(Blog);
+const LoginWithClassName = withClassName(Login);
+const RecommendationsWithClassName = withClassName(Recommendations);
+const DocumentsWithClassName = withClassName(Documents);
+const ProfileWithClassName = withClassName(Profile);
+const ProtectedAdminChatWithClassName = withClassName(ProtectedAdminChat);
 
 function ProtectedRoute({ children, user, loading }: { children: JSX.Element, user: any, loading: boolean }) {
   if (loading) return <div className="text-center py-16 text-yellow-400 font-poppins">Loading...</div>;
@@ -33,12 +43,12 @@ function LandingPage() {
     <div className="min-h-screen bg-gradient-dark">
       <Home />
       <div className="container py-16 space-y-16 overflow-y-auto">
-        <Countries className="font-roboto" />
-        <Services className="font-lora" />
-        <About className="font-source-sans" />
-        <Contact className="font-noto-serif" />
-        <Testimonials className="font-playfair" />
-        <Blog className="font-raleway" />
+        <CountriesWithClassName className="font-roboto" />
+        <ServicesWithClassName className="font-lora" />
+        <AboutWithClassName className="font-source-sans" />
+        <ContactWithClassName className="font-noto-serif" />
+        <TestimonialsWithClassName className="font-playfair" />
+        <BlogWithClassName className="font-raleway" />
          {/* Optional—only visible if logged in, but show placeholder */}
       </div>
     </div>
@@ -57,38 +67,38 @@ function App() {
         <main className="flex-grow">
           <Routes>
             <Route path="/" element={user ? <Navigate to="/countries" replace /> : <LandingPage />} />
-            <Route path="/about" element={<About className="font-source-sans" />} />
-            <Route path="/contact" element={<Contact className="font-noto-serif" />} />
-            <Route path="/testimonials" element={<Testimonials className="font-playfair" />} />
-            <Route path="/blog" element={<Blog className="font-raleway" />} />
-            <Route path="/login" element={<Login className="font-poppins" />} />
+            <Route path="/about" element={<AboutWithClassName className="font-source-sans" />} />
+            <Route path="/contact" element={<ContactWithClassName className="font-noto-serif" />} />
+            <Route path="/testimonials" element={<TestimonialsWithClassName className="font-playfair" />} />
+            <Route path="/blog" element={<BlogWithClassName className="font-raleway" />} />
+            <Route path="/login" element={<LoginWithClassName className="font-poppins" />} />
             <Route
               path="/countries"
-              element={<ProtectedRoute user={user} loading={loading}><Countries className="font-roboto" /></ProtectedRoute>}
+              element={<ProtectedRoute user={user} loading={loading}><CountriesWithClassName className="font-roboto" /></ProtectedRoute>}
             />
             <Route
               path="/countries/:countryName"
-              element={<ProtectedRoute user={user} loading={loading}><CountryDetail className="font-roboto" /></ProtectedRoute>}
+              element={<ProtectedRoute user={user} loading={loading}><CountryDetailWithClassName className="font-roboto" /></ProtectedRoute>}
             />
             <Route
               path="/services"
-              element={<ProtectedRoute user={user} loading={loading}><Services className="font-lora" /></ProtectedRoute>}
+              element={<ProtectedRoute user={user} loading={loading}><ServicesWithClassName className="font-lora" /></ProtectedRoute>}
             />
             <Route
               path="/recommendations"
-              element={<ProtectedRoute user={user} loading={loading}><Recommendations className="font-open-sans" /></ProtectedRoute>}
+              element={<ProtectedRoute user={user} loading={loading}><RecommendationsWithClassName className="font-open-sans" /></ProtectedRoute>}
             />
             <Route
               path="/documents"
-              element={<ProtectedRoute user={user} loading={loading}><Documents className="font-montserrat" /></ProtectedRoute>}
+              element={<ProtectedRoute user={user} loading={loading}><DocumentsWithClassName className="font-montserrat" /></ProtectedRoute>}
             />
             <Route
               path="/profile"
-              element={<ProtectedRoute user={user} loading={loading}><Profile className="font-merriweather" /></ProtectedRoute>}
+              element={<ProtectedRoute user={user} loading={loading}><ProfileWithClassName className="font-merriweather" /></ProtectedRoute>}
             />
             <Route
               path="/admin/chat"
-              element={<ProtectedRoute user={user} loading={loading}><ProtectedAdminChat className="font-montserrat" /></ProtectedRoute>}
+              element={<ProtectedRoute user={user} loading={loading}><ProtectedAdminChatWithClassName className="font-montserrat" /></ProtectedRoute>}
             />
           </Routes>
         </main>

@@ -1,3 +1,153 @@
+// import { FormEvent, useState } from "react";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import { supabase } from "../supabase";
+// import { FaLock } from "react-icons/fa";
+
+// const Login = () => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [name, setName] = useState("");
+//   const [status, setStatus] = useState<string | null>(null);
+//   const [isSignup, setIsSignup] = useState(false);
+//   const [loading, setLoading] = useState(false);
+
+//   const navigate = useNavigate();
+//   const location = useLocation();
+
+//   const handleSubmit = async (e: FormEvent) => {
+//     e.preventDefault();
+//     setStatus(null);
+//     setLoading(true);
+
+//     if (!email || !password || (isSignup && !name)) {
+//       setStatus("Please fill out all fields.");
+//       console.log("Form validation failed: Missing fields");
+//       setLoading(false);
+//       return;
+//     }
+
+//     if (!/\S+@\S+\.\S+/.test(email)) {
+//       setStatus("Please enter a valid email.");
+//       console.log("Form validation failed: Invalid email");
+//       setLoading(false);
+//       return;
+//     }
+
+//     try {
+//       if (isSignup) {
+//         console.log("Attempting signup with:", { email, name });
+//         const { error } = await supabase.auth.signUp({
+//           email,
+//           password,
+//           options: { data: { name } },
+//         });
+//         if (error) {
+//           console.error("Sign-up error:", error.message);
+//           setStatus(error.message);
+//         } else {
+//           setStatus("Signup successful! Check your email to confirm.");
+//           console.log("Signup successful:", email);
+//           setTimeout(() => {
+//             setIsSignup(false);
+//             setName("");
+//             setPassword("");
+//             setStatus("Please confirm your email, then log in.");
+//           }, 3000);
+//         }
+//       } else {
+//         console.log("Attempting sign-in with:", { email });
+//         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+//         if (error) {
+//           console.error("Sign-in error:", error.message);
+//           setStatus(error.message);
+//         } else {
+//           console.log("Sign-in successful, user:", data.user);
+//           setStatus("Login successful!");
+//           const from = (location.state as any)?.from || "/countries"; // Redirect to countries for logged-in users
+//           console.log("Redirecting to:", from);
+//           navigate(from, { replace: true });
+//         }
+//       }
+//     } catch (err: any) {
+//       setStatus(err.message || "An error occurred during authentication.");
+//       console.error("Authentication error:", err);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   return (
+//     <div className="py-16 bg-bright text-black font-poppins">
+//       <div className="container max-w-md">
+//         <h2 className="text-3xl font-bold text-center mb-8 text-blue-900 flex items-center justify-center gap-2">
+//           <FaLock /> {isSignup ? "Register" : "Login"}
+//         </h2>
+//         <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-custom space-y-6">
+//           {isSignup && (
+//             <div>
+//               <label htmlFor="name" className="block mb-1 font-semibold text-blue-900">Full Name</label>
+//               <input
+//                 type="text"
+//                 id="name"
+//                 placeholder="Full Name"
+//                 value={name}
+//                 onChange={(e) => setName(e.target.value)}
+//                 className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 bg-gray-200 text-black"
+//                 required
+//               />
+//             </div>
+//           )}
+//           <div>
+//             <label htmlFor="email" className="block mb-1 font-semibold text-blue-900">Email</label>
+//             <input
+//               type="email"
+//               id="email"
+//               placeholder="Email"
+//               value={email}
+//               onChange={(e) => setEmail(e.target.value)}
+//               className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 bg-gray-200 text-black"
+//               required
+//             />
+//           </div>
+//           <div>
+//             <label htmlFor="password" className="block mb-1 font-semibold text-blue-900">Password</label>
+//             <input
+//               type="password"
+//               id="password"
+//               placeholder="Password"
+//               value={password}
+//               onChange={(e) => setPassword(e.target.value)}
+//               className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 bg-gray-200 text-black"
+//               required
+//             />
+//           </div>
+//           <button
+//             type="submit"
+//             className="w-full bg-blue-900 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-all duration-300"
+//             disabled={loading}
+//           >
+//             {loading ? "Processing..." : isSignup ? "Sign Up" : "Login"}
+//           </button>
+//           <button
+//             type="button"
+//             onClick={() => setIsSignup(!isSignup)}
+//             className="w-full text-blue-900 text-sm hover:underline"
+//           >
+//             {isSignup ? "Already have an account? Login" : "Need an account? Sign Up"}
+//           </button>
+//         </form>
+//         {status && (
+//           <p className={`mt-4 text-center ${status.includes("successful") ? "text-blue-900" : "text-red-500"}`}>
+//             {status}
+//           </p>
+//         )}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Login;
+
 import { FormEvent, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../supabase";
@@ -36,23 +186,34 @@ const Login = () => {
     try {
       if (isSignup) {
         console.log("Attempting signup with:", { email, name });
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
-          options: { data: { name } },
+          options: { data: { name } }, // Store name in auth metadata
         });
         if (error) {
           console.error("Sign-up error:", error.message);
           setStatus(error.message);
         } else {
-          setStatus("Signup successful! Check your email to confirm.");
-          console.log("Signup successful:", email);
-          setTimeout(() => {
-            setIsSignup(false);
-            setName("");
-            setPassword("");
-            setStatus("Please confirm your email, then log in.");
-          }, 3000);
+          // Save user details to users table
+          const { error: insertError } = await supabase.from("users").insert({
+            id: data.user?.id,
+            name,
+            email,
+          });
+          if (insertError) {
+            console.error("Failed to save user details:", insertError.message);
+            setStatus(`Signup successful, but failed to save profile details: ${insertError.message}. Contact support.`);
+          } else {
+            setStatus("Signup successful! Check your email to confirm.");
+            console.log("Signup successful, user saved:", { email, name });
+            setTimeout(() => {
+              setIsSignup(false);
+              setName("");
+              setPassword("");
+              setStatus("Please confirm your email, then log in.");
+            }, 3000);
+          }
         }
       } else {
         console.log("Attempting sign-in with:", { email });
@@ -63,7 +224,7 @@ const Login = () => {
         } else {
           console.log("Sign-in successful, user:", data.user);
           setStatus("Login successful!");
-          const from = (location.state as any)?.from || "/countries"; // Redirect to countries for logged-in users
+          const from = (location.state as any)?.from || "/profile"; // Redirect to profile
           console.log("Redirecting to:", from);
           navigate(from, { replace: true });
         }
@@ -77,53 +238,53 @@ const Login = () => {
   };
 
   return (
-    <div className="py-16 bg-bright text-black font-poppins">
+    <div className="py-16 bg-gradient-dark font-poppins">
       <div className="container max-w-md">
-        <h2 className="text-3xl font-bold text-center mb-8 text-blue-900 flex items-center justify-center gap-2">
+        <h2 className="text-3xl font-bold text-center mb-8 text-yellow-400 flex items-center justify-center gap-2">
           <FaLock /> {isSignup ? "Register" : "Login"}
         </h2>
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-custom space-y-6">
+        <form onSubmit={handleSubmit} className="bg-blue-dark p-8 rounded-xl shadow-custom space-y-6">
           {isSignup && (
             <div>
-              <label htmlFor="name" className="block mb-1 font-semibold text-blue-900">Full Name</label>
+              <label htmlFor="name" className="block mb-1 font-semibold text-yellow-400">Full Name</label>
               <input
                 type="text"
                 id="name"
                 placeholder="Full Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 bg-gray-200 text-black"
+                className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-dark text-white"
                 required
               />
             </div>
           )}
           <div>
-            <label htmlFor="email" className="block mb-1 font-semibold text-blue-900">Email</label>
+            <label htmlFor="email" className="block mb-1 font-semibold text-yellow-400">Email</label>
             <input
               type="email"
               id="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 bg-gray-200 text-black"
+              className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-dark text-white"
               required
             />
           </div>
           <div>
-            <label htmlFor="password" className="block mb-1 font-semibold text-blue-900">Password</label>
+            <label htmlFor="password" className="block mb-1 font-semibold text-yellow-400">Password</label>
             <input
               type="password"
               id="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 bg-gray-200 text-black"
+              className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-dark text-white"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-900 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-all duration-300"
+            className="w-full bg-yellow-400 text-black py-3 px-4 rounded-xl hover:bg-yellow-600 transition-all duration-300"
             disabled={loading}
           >
             {loading ? "Processing..." : isSignup ? "Sign Up" : "Login"}
@@ -131,13 +292,13 @@ const Login = () => {
           <button
             type="button"
             onClick={() => setIsSignup(!isSignup)}
-            className="w-full text-blue-900 text-sm hover:underline"
+            className="w-full text-yellow-400 text-sm hover:underline"
           >
             {isSignup ? "Already have an account? Login" : "Need an account? Sign Up"}
           </button>
         </form>
         {status && (
-          <p className={`mt-4 text-center ${status.includes("successful") ? "text-blue-900" : "text-red-500"}`}>
+          <p className={`mt-4 text-center ${status.includes("successful") ? "text-yellow-400" : "text-red-500"}`}>
             {status}
           </p>
         )}

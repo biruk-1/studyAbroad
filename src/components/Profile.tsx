@@ -131,127 +131,127 @@
 
 // export default Profile;
 
-import { useState, useEffect } from "react";
-import { supabase } from "../supabase";
-import { FaUser } from "react-icons/fa";
+// import { useState, useEffect } from "react";
+// import { supabase } from "../supabase";
+// import { FaUser } from "react-icons/fa";
 
-type Preference = {
-  id: number;
-  country: {
-    name: string;
-    flag: string;
-    details: string;
-  };
-  saved_at: string;
-};
+// type Preference = {
+//   id: number;
+//   country: {
+//     name: string;
+//     flag: string;
+//     details: string;
+//   };
+//   saved_at: string;
+// };
 
-type Document = {
-  id: number;
-  file_name: string;
-  uploaded_at: string;
-  file_size_mb: number | null;
-  word_count: number | null;
-};
+// type Document = {
+//   id: number;
+//   file_name: string;
+//   uploaded_at: string;
+//   file_size_mb: number | null;
+//   word_count: number | null;
+// };
 
-const Profile = () => {
-  const [preferences, setPreferences] = useState<Preference[]>([]);
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [error, setError] = useState<string | null>(null);
+// const Profile = () => {
+//   const [preferences, setPreferences] = useState<Preference[]>([]);
+//   const [documents, setDocuments] = useState<Document[]>([]);
+//   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) {
-        setError("Please log in to view your profile.");
-        return;
-      }
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       const { data: userData } = await supabase.auth.getUser();
+//       if (!userData.user) {
+//         setError("Please log in to view your profile.");
+//         return;
+//       }
 
-      const { data: prefData, error: prefError } = await supabase
-        .from("user_preferences")
-        .select(`
-          id,
-          saved_at,
-          country:countries! (name, flag, details)
-        `)
-        .eq("user_id", userData.user.id);
+//       const { data: prefData, error: prefError } = await supabase
+//         .from("user_preferences")
+//         .select(`
+//           id,
+//           saved_at,
+//           country:countries! (name, flag, details)
+//         `)
+//         .eq("user_id", userData.user.id);
 
-      if (prefError) {
-        setError("Failed to load preferences.");
-      } else {
-        const formattedPreferences = prefData.map((pref: any) => ({
-          id: pref.id,
-          saved_at: pref.saved_at,
-          country: pref.countries[0]
-        }));
-        setPreferences(formattedPreferences || []);
-      }
+//       if (prefError) {
+//         setError("Failed to load preferences.");
+//       } else {
+//         const formattedPreferences = prefData.map((pref: any) => ({
+//           id: pref.id,
+//           saved_at: pref.saved_at,
+//           country: pref.countries[0]
+//         }));
+//         setPreferences(formattedPreferences || []);
+//       }
 
-      const { data: docData, error: docError } = await supabase
-        .from("documents")
-        .select("id, file_name, uploaded_at, file_size_mb, word_count")
-        .eq("user_id", userData.user.id);
+//       const { data: docData, error: docError } = await supabase
+//         .from("documents")
+//         .select("id, file_name, uploaded_at, file_size_mb, word_count")
+//         .eq("user_id", userData.user.id);
 
-      if (docError) setError("Failed to load documents.");
-      else setDocuments(docData || []);
-    };
+//       if (docError) setError("Failed to load documents.");
+//       else setDocuments(docData || []);
+//     };
 
-    fetchData();
-  }, []);
+//     fetchData();
+//   }, []);
 
-  const getAnalysisFeedback = (doc: Document): string => {
-    const sizeFeedback = `Size: ${doc.file_size_mb?.toFixed(2)} MB`;
-    const wordFeedback = doc.word_count ? `Words: ${doc.word_count}` : "Words: N/A";
-    return `${sizeFeedback} | ${wordFeedback}`;
-  };
+//   const getAnalysisFeedback = (doc: Document): string => {
+//     const sizeFeedback = `Size: ${doc.file_size_mb?.toFixed(2)} MB`;
+//     const wordFeedback = doc.word_count ? `Words: ${doc.word_count}` : "Words: N/A";
+//     return `${sizeFeedback} | ${wordFeedback}`;
+//   };
 
-  return (
-    <div className="py-16">
-      <div className="container">
-        <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 flex items-center justify-center gap-2">
-          <FaUser /> Your Profile
-        </h2>
-        {error && <p className="text-center text-red-500 mb-4">{error}</p>}
-        <section className="mb-12">
-          <h3 className="text-2xl font-semibold text-gray-800 mb-6">Saved Recommendations</h3>
-          {preferences.length === 0 ? (
-            <p className="text-center text-gray-600">No saved recommendations yet.</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {preferences.map((pref) => (
-                <div key={pref.id} className="bg-white p-6 rounded-xl shadow-custom">
-                  <span className="text-5xl block text-center mb-4">{pref.country.flag}</span>
-                  <h4 className="text-xl font-semibold text-gray-800 text-center">{pref.country.name}</h4>
-                  <p className="text-gray-600 text-center mt-2">{pref.country.details}</p>
-                  <p className="text-sm text-gray-500 text-center mt-2">
-                    Saved: {new Date(pref.saved_at).toLocaleString()}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-        <section>
-          <h3 className="text-2xl font-semibold text-gray-800 mb-6">Your Documents</h3>
-          {documents.length === 0 ? (
-            <p className="text-center text-gray-600">No documents uploaded yet.</p>
-          ) : (
-            <div className="space-y-6">
-              {documents.map((doc) => (
-                <div key={doc.id} className="bg-white p-6 rounded-xl shadow-custom">
-                  <p className="text-lg font-semibold text-gray-800">{doc.file_name}</p>
-                  <p className="text-sm text-gray-600">Uploaded: {new Date(doc.uploaded_at).toLocaleString()}</p>
-                  <p className="text-sm text-gray-600">Analysis: <span className="text-blue-600">{getAnalysisFeedback(doc)}</span></p>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      </div>
-    </div>
-  );
-};
+//   return (
+//     <div className="py-16">
+//       <div className="container">
+//         <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 flex items-center justify-center gap-2">
+//           <FaUser /> Your Profile
+//         </h2>
+//         {error && <p className="text-center text-red-500 mb-4">{error}</p>}
+//         <section className="mb-12">
+//           <h3 className="text-2xl font-semibold text-gray-800 mb-6">Saved Recommendations</h3>
+//           {preferences.length === 0 ? (
+//             <p className="text-center text-gray-600">No saved recommendations yet.</p>
+//           ) : (
+//             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+//               {preferences.map((pref) => (
+//                 <div key={pref.id} className="bg-white p-6 rounded-xl shadow-custom">
+//                   <span className="text-5xl block text-center mb-4">{pref.country.flag}</span>
+//                   <h4 className="text-xl font-semibold text-gray-800 text-center">{pref.country.name}</h4>
+//                   <p className="text-gray-600 text-center mt-2">{pref.country.details}</p>
+//                   <p className="text-sm text-gray-500 text-center mt-2">
+//                     Saved: {new Date(pref.saved_at).toLocaleString()}
+//                   </p>
+//                 </div>
+//               ))}
+//             </div>
+//           )}
+//         </section>
+//         <section>
+//           <h3 className="text-2xl font-semibold text-gray-800 mb-6">Your Documents</h3>
+//           {documents.length === 0 ? (
+//             <p className="text-center text-gray-600">No documents uploaded yet.</p>
+//           ) : (
+//             <div className="space-y-6">
+//               {documents.map((doc) => (
+//                 <div key={doc.id} className="bg-white p-6 rounded-xl shadow-custom">
+//                   <p className="text-lg font-semibold text-gray-800">{doc.file_name}</p>
+//                   <p className="text-sm text-gray-600">Uploaded: {new Date(doc.uploaded_at).toLocaleString()}</p>
+//                   <p className="text-sm text-gray-600">Analysis: <span className="text-blue-600">{getAnalysisFeedback(doc)}</span></p>
+//                 </div>
+//               ))}
+//             </div>
+//           )}
+//         </section>
+//       </div>
+//     </div>
+//   );
+// };
 
-export default Profile;
+// export default Profile;
 // import { useState, useEffect } from "react";
 // import { supabase } from "../supabase";
 // import { useAuth } from "../hooks/useAuth";
@@ -379,3 +379,303 @@ export default Profile;
 // };
 
 // export default Profile;
+
+// import { useState, useEffect } from "react";
+// import { supabase } from "../supabase";
+// import { useAuth } from "../hooks/useAuth";
+// import { FaUser } from "react-icons/fa";
+
+// type Preference = {
+//   id: number;
+//   country: {
+//     name: string;
+//     flag: string;
+//     details: string;
+//   };
+//   saved_at: string;
+// };
+
+// type Document = {
+//   id: number;
+//   file_name: string;
+//   uploaded_at: string;
+//   file_size_mb: number | null;
+//   word_count: number | null;
+// };
+
+// const Profile = () => {
+//   const [preferences, setPreferences] = useState<Preference[]>([]);
+//   const [documents, setDocuments] = useState<Document[]>([]);
+//   const [error, setError] = useState<string | null>(null);
+//   const { user } = useAuth();
+
+//   useEffect(() => {
+//     if (!user) {
+//       setError("Please log in to view your profile.");
+//       return;
+//     }
+
+//     const fetchData = async () => {
+//       try {
+//         // Fetch preferences
+//         const { data: prefData, error: prefError } = await supabase
+//           .from("user_preferences")
+//           .select(`
+//             id,
+//             saved_at,
+//             country:countries (name, flag, details)
+//           `)
+//           .eq("user_id", user.id);
+
+//         if (prefError) {
+//           throw new Error(prefError.message || "Failed to load preferences.");
+//         }
+//         setPreferences(prefData?.map((pref: any) => ({
+//           id: pref.id,
+//           saved_at: pref.saved_at,
+//           country: pref.country || { name: "Unknown", flag: "🌐", details: "No details" },
+//         })) || []);
+
+//         // Fetch documents
+//         const { data: docData, error: docError } = await supabase
+//           .from("documents")
+//           .select("id, file_name, uploaded_at, file_size_mb, word_count")
+//           .eq("user_id", user.id);
+
+//         if (docError) throw new Error(docError.message || "Failed to load documents.");
+//         setDocuments(docData || []);
+//       } catch (err: any) {
+//         setError(err.message);
+//         console.error("Profile fetch error:", err);
+//       }
+//     };
+
+//     fetchData();
+//   }, [user]);
+
+//   const getAnalysisFeedback = (doc: Document): string => {
+//     const sizeFeedback = `Size: ${doc.file_size_mb?.toFixed(2)} MB`;
+//     const wordFeedback = doc.word_count ? `Words: ${doc.word_count}` : "Words: N/A";
+//     return `${sizeFeedback} | ${wordFeedback}`;
+//   };
+
+//   return (
+//     <div className="py-16 bg-maroon-dim font-merriweather min-h-screen">
+//       <div className="container mx-auto max-w-4xl">
+//         <h2 className="text-3xl font-bold text-center mb-12 text-yellow-400 flex items-center justify-center gap-4">
+//           <FaUser className="text-yellow-400" /> Your Profile
+//         </h2>
+//         {error && <p className="text-center text-red-500 mb-6">{error}</p>}
+//         <section className="mb-12">
+//           <h3 className="text-2xl font-semibold text-yellow-400 mb-8 text-center">Saved Recommendations</h3>
+//           {preferences.length === 0 ? (
+//             <p className="text-center text-gray-300">No saved recommendations yet.</p>
+//           ) : (
+//             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto max-w-5xl">
+//               {preferences.map((pref) => (
+//                 <div key={pref.id} className="bg-gray-700 p-6 rounded-xl shadow-custom hover:shadow-lg transition-all duration-300">
+//                   <span className="text-5xl block text-center mb-6">{pref.country.flag}</span>
+//                   <h4 className="text-xl font-semibold text-yellow-400 text-center mb-4">{pref.country.name}</h4>
+//                   <p className="text-white text-center mb-4">{pref.country.details}</p>
+//                   <p className="text-sm text-gray-300 text-center">
+//                     Saved: {new Date(pref.saved_at).toLocaleString()}
+//                   </p>
+//                 </div>
+//               ))}
+//             </div>
+//           )}
+//         </section>
+//         <section>
+//           <h3 className="text-2xl font-semibold text-yellow-400 mb-8 text-center">Your Documents</h3>
+//           {documents.length === 0 ? (
+//             <p className="text-center text-gray-300">No documents uploaded yet.</p>
+//           ) : (
+//             <div className="space-y-6 mx-auto max-w-2xl">
+//               {documents.map((doc) => (
+//                 <div key={doc.id} className="bg-gray-700 p-6 rounded-xl shadow-custom">
+//                   <p className="text-lg font-semibold text-yellow-400 mb-3">{doc.file_name}</p>
+//                   <p className="text-sm text-gray-300 mb-2">Uploaded: {new Date(doc.uploaded_at).toLocaleString()}</p>
+//                   <p className="text-sm text-gray-300">
+//                     Analysis: <span className="text-yellow-400">{getAnalysisFeedback(doc)}</span>
+//                   </p>
+//                 </div>
+//               ))}
+//             </div>
+//           )}
+//         </section>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Profile;
+
+import { useState, useEffect } from "react";
+import { supabase } from "../supabase";
+import { useAuth } from "../hooks/useAuth";
+import { FaUser } from "react-icons/fa";
+
+type UserProfile = {
+  id: string;
+  name: string;
+  email: string;
+};
+
+type Preference = {
+  id: number;
+  country: {
+    name: string;
+    flag: string;
+    details: string;
+  };
+  saved_at: string;
+};
+
+type Document = {
+  id: number;
+  file_name: string;
+  uploaded_at: string;
+  file_size_mb: number | null;
+  word_count: number | null;
+};
+
+const Profile = () => {
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [preferences, setPreferences] = useState<Preference[]>([]);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) {
+      // setError("Please log in to view your profile.");
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        // Fetch user profile (name, email) from users table
+        const { data: userData, error: userError } = await supabase
+          .from("users")
+          .select("id, name, email")
+          .eq("id", user.id)
+          .single();
+
+        if (userError) {
+          console.error("User profile fetch error:", userError.message);
+          // Try fetching from auth.users metadata as fallback
+          const { data: authUser } = await supabase.auth.getUser();
+          if (authUser.user?.user_metadata?.name) {
+            setUserProfile({
+              id: user.id,
+              name: authUser.user.user_metadata.name,
+              email: user.email || "",
+            });
+          } else {
+            throw new Error(userError.message || "Failed to load user profile.");
+          }
+        } else {
+          setUserProfile(userData);
+        }
+
+        // Fetch preferences
+        const { data: prefData, error: prefError } = await supabase
+          .from("user_preferences")
+          .select(`
+            id,
+            saved_at,
+            country:countries (name, flag, details)
+          `)
+          .eq("user_id", user.id);
+
+        if (prefError) throw new Error(prefError.message || "Failed to load preferences.");
+        setPreferences(prefData?.map((pref: any) => ({
+          id: pref.id,
+          saved_at: pref.saved_at,
+          country: pref.country || { name: "Unknown", flag: "🌐", details: "No details" },
+        })) || []);
+
+        // Fetch documents
+        const { data: docData, error: docError } = await supabase
+          .from("documents")
+          .select("id, file_name, uploaded_at, file_size_mb, word_count")
+          .eq("user_id", user.id);
+
+        if (docError) throw new Error(docError.message || "Failed to load documents.");
+        setDocuments(docData || []);
+      } catch (err: any) {
+        setError(err.message);
+        console.error("Profile fetch error:", err);
+      }
+    };
+
+    fetchData();
+  }, [user]);
+
+  const getAnalysisFeedback = (doc: Document): string => {
+    const sizeFeedback = `Size: ${doc.file_size_mb?.toFixed(2)} MB`;
+    const wordFeedback = doc.word_count ? `Words: ${doc.word_count}` : "Words: N/A";
+    return `${sizeFeedback} | ${wordFeedback}`;
+  };
+
+  return (
+    <div className="py-16 bg-gradient-dark font-merriweather min-h-screen">
+      <div className="container mx-auto max-w-4xl">
+        <h2 className="text-3xl font-bold text-center mb-12 text-yellow-400 flex items-center justify-center gap-4">
+          <FaUser className="text-yellow-400" /> {userProfile?.name || "Your"} Profile
+        </h2>
+        {error && <p className="text-center text-red-500 mb-6">{error}</p>}
+        {!userProfile ? (
+          <p className="text-center text-gray-300">Loading profile...</p>
+        ) : (
+          <>
+            <section className="mb-12 bg-blue-dark p-6 rounded-xl shadow-custom">
+              <h3 className="text-2xl font-semibold text-yellow-400 mb-4">Personal Information</h3>
+              <p className="text-white"><strong>Name:</strong> {userProfile.name}</p>
+              <p className="text-white"><strong>Email:</strong> {userProfile.email}</p>
+            </section>
+            <section className="mb-12">
+              <h3 className="text-2xl font-semibold text-yellow-400 mb-8 text-center">Saved Recommendations</h3>
+              {preferences.length === 0 ? (
+                <p className="text-center text-gray-300">No saved recommendations yet.</p>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto max-w-5xl">
+                  {preferences.map((pref) => (
+                    <div key={pref.id} className="bg-blue-dark p-6 rounded-xl shadow-custom hover:shadow-lg transition-all duration-300">
+                      <span className="text-5xl block text-center mb-6">{pref.country.flag}</span>
+                      <h4 className="text-xl font-semibold text-yellow-400 text-center mb-4">{pref.country.name}</h4>
+                      <p className="text-white text-center mb-4">{pref.country.details}</p>
+                      <p className="text-sm text-gray-300 text-center">
+                        Saved: {new Date(pref.saved_at).toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+            <section>
+              <h3 className="text-2xl font-semibold text-yellow-400 mb-8 text-center">Your Documents</h3>
+              {documents.length === 0 ? (
+                <p className="text-center text-gray-300">No documents uploaded yet.</p>
+              ) : (
+                <div className="space-y-6 mx-auto max-w-2xl">
+                  {documents.map((doc) => (
+                    <div key={doc.id} className="bg-blue-dark p-6 rounded-xl shadow-custom">
+                      <p className="text-lg font-semibold text-yellow-400 mb-3">{doc.file_name}</p>
+                      <p className="text-sm text-gray-300 mb-2">Uploaded: {new Date(doc.uploaded_at).toLocaleString()}</p>
+                      <p className="text-sm text-gray-300">
+                        Analysis: <span className="text-yellow-400">{getAnalysisFeedback(doc)}</span>
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Profile;
