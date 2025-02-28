@@ -1,4 +1,4 @@
-import { FormEvent, useState, useEffect } from "react";
+import { FormEvent, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../supabase";
 import { FaLock } from "react-icons/fa";
@@ -10,23 +10,9 @@ const Login = () => {
   const [status, setStatus] = useState<string | null>(null);
   const [isSignup, setIsSignup] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data.user) {
-        setIsAuthenticated(true);
-        const from = (location.state as any)?.from || "/profile";
-        console.log("User already logged in, redirecting to:", from);
-        navigate(from, { replace: true });
-      }
-    };
-    checkUser();
-  }, [navigate, location]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -77,8 +63,7 @@ const Login = () => {
         } else {
           console.log("Sign-in successful, user:", data.user);
           setStatus("Login successful!");
-          setIsAuthenticated(true);
-          const from = (location.state as any)?.from || "/profile";
+          const from = (location.state as any)?.from || "/countries"; // Redirect to countries for logged-in users
           console.log("Redirecting to:", from);
           navigate(from, { replace: true });
         }
@@ -91,58 +76,54 @@ const Login = () => {
     }
   };
 
-  if (isAuthenticated) {
-    return null; // Prevent re-rendering after redirect
-  }
-
   return (
-    <div className="py-16">
+    <div className="py-16 bg-bright text-black font-poppins">
       <div className="container max-w-md">
-        <h2 className="text-3xl font-bold text-center mb-8 text-gray-800 flex items-center justify-center gap-2">
+        <h2 className="text-3xl font-bold text-center mb-8 text-blue-900 flex items-center justify-center gap-2">
           <FaLock /> {isSignup ? "Register" : "Login"}
         </h2>
         <form onSubmit={handleSubmit} className="bg-white p-8 rounded-xl shadow-custom space-y-6">
           {isSignup && (
             <div>
-              <label htmlFor="name" className="block mb-1 font-semibold text-gray-800">Full Name</label>
+              <label htmlFor="name" className="block mb-1 font-semibold text-blue-900">Full Name</label>
               <input
                 type="text"
                 id="name"
                 placeholder="Full Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 bg-gray-200 text-black"
                 required
               />
             </div>
           )}
           <div>
-            <label htmlFor="email" className="block mb-1 font-semibold text-gray-800">Email</label>
+            <label htmlFor="email" className="block mb-1 font-semibold text-blue-900">Email</label>
             <input
               type="email"
               id="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 bg-gray-200 text-black"
               required
             />
           </div>
           <div>
-            <label htmlFor="password" className="block mb-1 font-semibold text-gray-800">Password</label>
+            <label htmlFor="password" className="block mb-1 font-semibold text-blue-900">Password</label>
             <input
               type="password"
               id="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="w-full border p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-900 bg-gray-200 text-black"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-all"
+            className="w-full bg-blue-900 text-white py-3 px-4 rounded-xl hover:bg-blue-700 transition-all duration-300"
             disabled={loading}
           >
             {loading ? "Processing..." : isSignup ? "Sign Up" : "Login"}
@@ -150,13 +131,13 @@ const Login = () => {
           <button
             type="button"
             onClick={() => setIsSignup(!isSignup)}
-            className="w-full text-blue-600 text-sm hover:underline"
+            className="w-full text-blue-900 text-sm hover:underline"
           >
             {isSignup ? "Already have an account? Login" : "Need an account? Sign Up"}
           </button>
         </form>
         {status && (
-          <p className={`mt-4 text-center ${status.includes("successful") ? "text-green-600" : "text-red-500"}`}>
+          <p className={`mt-4 text-center ${status.includes("successful") ? "text-blue-900" : "text-red-500"}`}>
             {status}
           </p>
         )}

@@ -1,100 +1,159 @@
-// import { Link } from "react-router-dom";
-// import { supabase } from "../supabase";
-// import { useAuth } from "../hooks/useAuth";
-
-// const Navbar = () => {
-//   const { user, signOut } = useAuth();
-
-//   const handleLogout = async () => {
-//     await signOut();
-//   };
-
-//   return (
-//     <nav className="bg-blue-600 text-white p-4">
-//       <div className="container mx-auto flex justify-between items-center">
-//         <Link to="/" className="text-2xl font-bold">Study Abroad</Link>
-//         <div className="flex items-center space-x-4">
-//           <Link to="/" className="hover:underline">Home</Link>
-//           <Link to="/countries" className="hover:underline">Countries</Link>
-//           <Link to="/services" className="hover:underline">Services</Link>
-//           <Link to="/recommendations" className="hover:underline">Recommendations</Link>
-//           <Link to="/documents" className="hover:underline">Documents</Link>
-//           <Link to="/profile" className="hover:underline">Profile</Link>
-//           <Link to="/testimonials" className="hover:underline">Testimonials</Link>
-//           <Link to="/blog" className="hover:underline">Blog</Link>
-//           <Link to="/about" className="hover:underline">About</Link>
-//           <Link to="/contact" className="hover:underline">Contact</Link>
-//           {user ? (
-//             <button
-//               onClick={handleLogout}
-//               className="bg-red-600 px-4 py-2 rounded hover:bg-red-700"
-//             >
-//               Logout
-//             </button>
-//           ) : (
-//             <Link
-//               to="/login"
-//               className="bg-green-600 px-4 py-2 rounded hover:bg-green-700"
-//             >
-//               Login / Register
-//             </Link>
-//           )}
-//         </div>
-//       </div>
-//     </nav>
-//   );
-// };
-
-// export default Navbar;
-
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { FaPlaneDeparture } from "react-icons/fa";
+import { FaPlaneDeparture, FaBars, FaTimes, FaFacebook, FaTwitter, FaInstagram } from "react-icons/fa";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await signOut();
+    navigate("/");
+    setIsMobileMenuOpen(false);
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
-    <nav className="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-4 shadow-custom sticky top-0 z-50">
-      <div className="container flex justify-between items-center">
-        <Link to="/" className="flex items-center gap-2 text-2xl font-bold">
-          <FaPlaneDeparture className="text-orange-400" />
+    <nav className="bg-gradient-to-b from-black to-blue-900 text-white shadow-lg sticky top-0 z-50 font-poppins">
+      {/* Top Bar (Contact Info & Socials) */}
+      <div className="hidden md:flex items-center justify-between px-4 py-2 bg-gray-900 text-sm text-white">
+        {/* <div className="flex items-center gap-4">
+          <span>📧 info@studyabroad.com</span>
+          <span>📍 12 Queen Park, LA, USA</span>
+          <span>🕒 Mon-Sat: 09:00-18:00</span>
+        </div> */}
+        {/* <div className="flex items-center gap-4">
+          <a href="#" className="hover:text-yellow-400 transition-colors duration-300"><FaFacebook /></a>
+          <a href="#" className="hover:text-yellow-400 transition-colors duration-300"><FaTwitter /></a>
+          <a href="#" className="hover:text-yellow-400 transition-colors duration-300"><FaInstagram /></a>
+          <Link
+            to="/login"
+            className="bg-yellow-500 text-black px-3 py-1 rounded-full hover:bg-yellow-600 transition-all duration-300"
+          >
+            Appointment
+          </Link>
+        </div>*/}
+      </div> 
+
+      {/* Main Navbar */}
+      <div className="container mx-auto flex justify-between items-center px-4 py-4">
+        {/* Logo */}
+        <Link to="/" className="flex items-center gap-2 text-2xl font-bold transition-transform hover:scale-105">
+          <FaPlaneDeparture className="text-yellow-400" />
           Study Abroad
         </Link>
-        <div className="flex items-center gap-6">
-          <div className="hidden md:flex gap-6">
-            <Link to="/" className="hover:text-orange-400 transition-all">Home</Link>
-            <Link to="/countries" className="hover:text-orange-400 transition-all">Countries</Link>
-            <Link to="/services" className="hover:text-orange-400 transition-all">Services</Link>
-            <Link to="/recommendations" className="hover:text-orange-400 transition-all">Recommendations</Link>
-            <Link to="/documents" className="hover:text-orange-400 transition-all">Documents</Link>
-            <Link to="/profile" className="hover:text-orange-400 transition-all">Profile</Link>
-            <Link to="/testimonials" className="hover:text-orange-400 transition-all">Testimonials</Link>
-            <Link to="/blog" className="hover:text-orange-400 transition-all">Blog</Link>
-            <Link to="/about" className="hover:text-orange-400 transition-all">About</Link>
-            <Link to="/contact" className="hover:text-orange-400 transition-all">Contact</Link>
-          </div>
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-6">
           {user ? (
-            <button
-              onClick={handleLogout}
-              className="bg-orange-500 text-white px-4 py-2 rounded-xl hover:bg-orange-600 transition-all"
-            >
-              Logout
-            </button>
+            // Secured Components (Logged In) - Dim Colors
+            <>
+              <Link to="/countries" className="hover:text-yellow-400 transition-colors duration-300 text-gray-dim">Countries</Link>
+              <Link to="/services" className="hover:text-yellow-400 transition-colors duration-300 text-gray-dim">Services</Link>
+              <Link to="/recommendations" className="hover:text-yellow-400 transition-colors duration-300 text-gray-dim">Recommendations</Link>
+              <Link to="/documents" className="hover:text-yellow-400 transition-colors duration-300 text-gray-dim">Documents</Link>
+              <Link to="/profile" className="hover:text-yellow-400 transition-colors duration-300 text-gray-dim">Profile</Link>
+              <Link to="/admin/chat" className="hover:text-yellow-400 transition-colors duration-300 text-gray-dim">Admin Chat</Link>
+              <button
+                onClick={handleLogout}
+                className="bg-gray-dim text-white px-4 py-2 rounded-full hover:bg-gray-600 transition-all duration-300"
+              >
+                Logout
+              </button>
+            </>
           ) : (
-            <Link
-              to="/login"
-              className="bg-green-500 text-white px-4 py-2 rounded-xl hover:bg-green-600 transition-all"
-            >
-              Login / Register
-            </Link>
+            // Public Components (Not Logged In) - Bright Colors
+            <>
+              <Link to="/" className="hover:text-yellow-400 transition-colors duration-300 text-yellow-400">Home</Link>
+              <Link to="/about" className="hover:text-yellow-400 transition-colors duration-300 text-yellow-400">About</Link>
+              <Link to="/contact" className="hover:text-yellow-400 transition-colors duration-300 text-yellow-400">Contact</Link>
+              <Link to="/testimonials" className="hover:text-yellow-400 transition-colors duration-300 text-yellow-400">Testimonials</Link>
+              <Link to="/blog" className="hover:text-yellow-400 transition-colors duration-300 text-yellow-400">Blog</Link>
+              <Link
+                to="/login"
+                className="bg-yellow-500 text-black px-4 py-2 rounded-full hover:bg-yellow-600 transition-all duration-300"
+              >
+                Login / Register
+              </Link>
+            </>
           )}
         </div>
+
+        {/* Mobile Menu Toggle */}
+        <button
+          className="md:hidden text-2xl focus:outline-none text-yellow-400"
+          onClick={toggleMobileMenu}
+          aria-label="Toggle mobile menu"
+        >
+          {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+        </button>
       </div>
+
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-blue-900 text-white px-4 py-6 space-y-4 animate-slide-in font-poppins">
+          {user ? (
+            // Secured Components (Logged In) - Dim Colors
+            <>
+              <Link to="/countries" className="block hover:text-yellow-400 transition-colors duration-300 text-gray-dim" onClick={toggleMobileMenu}>
+                Countries
+              </Link>
+              <Link to="/services" className="block hover:text-yellow-400 transition-colors duration-300 text-gray-dim" onClick={toggleMobileMenu}>
+                Services
+              </Link>
+              <Link to="/recommendations" className="block hover:text-yellow-400 transition-colors duration-300 text-gray-dim" onClick={toggleMobileMenu}>
+                Recommendations
+              </Link>
+              <Link to="/documents" className="block hover:text-yellow-400 transition-colors duration-300 text-gray-dim" onClick={toggleMobileMenu}>
+                Documents
+              </Link>
+              <Link to="/profile" className="block hover:text-yellow-400 transition-colors duration-300 text-gray-dim" onClick={toggleMobileMenu}>
+                Profile
+              </Link>
+              <Link to="/admin/chat" className="block hover:text-yellow-400 transition-colors duration-300 text-gray-dim" onClick={toggleMobileMenu}>
+                Admin Chat
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="block w-full text-left bg-gray-dim text-white px-4 py-2 rounded-full hover:bg-gray-600 transition-all duration-300"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            // Public Components (Not Logged In) - Bright Colors
+            <>
+              <Link to="/" className="block hover:text-yellow-400 transition-colors duration-300 text-yellow-400" onClick={toggleMobileMenu}>
+                Home
+              </Link>
+              <Link to="/about" className="block hover:text-yellow-400 transition-colors duration-300 text-yellow-400" onClick={toggleMobileMenu}>
+                About
+              </Link>
+              <Link to="/contact" className="block hover:text-yellow-400 transition-colors duration-300 text-yellow-400" onClick={toggleMobileMenu}>
+                Contact
+              </Link>
+              <Link to="/testimonials" className="block hover:text-yellow-400 transition-colors duration-300 text-yellow-400" onClick={toggleMobileMenu}>
+                Testimonials
+              </Link>
+              <Link to="/blog" className="block hover:text-yellow-400 transition-colors duration-300 text-yellow-400" onClick={toggleMobileMenu}>
+                Blog
+              </Link>
+              <Link
+                to="/login"
+                className="block bg-yellow-500 text-black px-4 py-2 rounded-full hover:bg-yellow-600 transition-all duration-300"
+                onClick={toggleMobileMenu}
+              >
+                Login / Register
+              </Link>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   );
 };

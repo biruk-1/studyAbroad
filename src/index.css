@@ -1,21 +1,32 @@
-@import "@fortawesome/fontawesome-free/css/all.min.css";
 
 /* Tailwind directives */
+
+/* src/index.css */
+/* src/index.css */
+
+/* src/index.css */
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* src/index.css */
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-image: url("https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80");
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  min-height: 100vh; /* Ensure body takes full height */
-  font-family: 'Poppins', sans-serif; /* Modern font */
-  background: linear-gradient(135deg, #e6f0fa, #fff); /* Subtle gradient */
+  background: linear-gradient(135deg, #1a202c, #2d3748);
+  min-height: 100vh;
+  color: #fff;
 }
 
 .container {
@@ -24,36 +35,8 @@ body {
   padding: 0 1rem;
 }
 
-.shadow-md {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.rounded-lg {
-  border-radius: 0.5rem;
-}
-
-.bg-gray-100 {
-  background-color: rgba(243, 244, 246, 0.95);
-}
-
-.bg-white {
-  background-color: rgba(255, 255, 255, 0.98);
-}
-
-.text-gray-600 {
-  color: #4b5563; /* Darker gray for contrast */
-}
-
-.text-gray-700 {
-  color: #374151;
-}
-
-.text-gray-800 {
-  color: #1f2937;
-}
-
 .shadow-custom {
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
 .rounded-xl {
@@ -64,26 +47,138 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Ensure content is readable over background */
-nav {
-  background-color: rgba(37, 99, 235, 0.95); /* Slightly more opaque */
-  position: sticky;
-  top: 0;
-  z-index: 10; /* Keep navbar above content */
+/* Animation for mobile menu */
+.animate-slide-in {
+  animation: slideIn 0.3s ease-in-out forwards;
 }
 
-footer {
-  background-color: rgba(37, 99, 235, 0.95);
-  z-index: 10;
-}
-
-.min-h-screen {
-  background-color: rgba(255, 255, 255, 0.85); /* Light overlay for readability */
+@keyframes slideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Responsive adjustments */
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .container {
     padding: 0 0.5rem;
   }
+  .bg-gray-900 {
+    display: none; /* Hide top bar on mobile */
+  }
+}
+
+/* Hover effects */
+button:hover,
+a:hover {
+  transform: translateY(-2px);
+}
+
+/* Colors */
+.bg-bright {
+  background-color: #facc15; /* Yellow */
+  color: #000;
+}
+
+.bg-dim {
+  background-color: #1a202c; /* Dark blue */
+}
+
+.bg-green-bright {
+  background-color: #34d399; /* Green */
+  color: #000;
+}
+
+.bg-maroon-dim {
+  background-color: #665555; /* Maroon */
+}
+
+.bg-orange-bright {
+  background-color: #ddc293; /* Orange */
+  color: #000;
+}
+
+.bg-gray-dim {
+  background-color: #4a5568; /* Gray */
+}
+
+.text-bright {
+  color: #facc15;
+}
+
+.text-dim {
+  color: #4a5568;
+}
+
+.hover:text-yellow-400:hover {
+  color: #facc15; /* Bright yellow for hover */
+}
+
+.text-yellow-400 {
+  color: #facc15;
+}
+
+/* Font Styles */
+.font-poppins {
+  font-family: "Poppins", sans-serif;
+}
+
+.font-roboto {
+  font-family: "Roboto", sans-serif;
+}
+
+.font-lora {
+  font-family: "Lora", serif;
+}
+
+.font-open-sans {
+  font-family: "Open Sans", sans-serif;
+}
+
+.font-montserrat {
+  font-family: "Montserrat", sans-serif;
+}
+
+.font-merriweather {
+  font-family: "Merriweather", serif;
+}
+
+.font-playfair {
+  font-family: "Playfair Display", serif;
+}
+
+.font-raleway {
+  font-family: "Raleway", sans-serif;
+}
+
+.font-source-sans {
+  font-family: "Source Sans Pro", sans-serif;
+}
+
+.font-noto-serif {
+  font-family: "Noto Serif", serif;
+}
+
+/* Hero and buttons */
+.bg-gradient-dark {
+  background: linear-gradient(135deg, #000, #2d3748);
+}
+
+.btn-primary {
+  background-color: #facc15;
+  color: #000;
+  padding: 12px 24px;
+  border-radius: 9999px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #e5b200;
+  transform: translateY(-2px);
 }
